@@ -1,3 +1,5 @@
+import { StorageStatus } from '@/components/StorageStatus';
+
 const apis = [
   {
     name: 'Flights',
@@ -350,9 +352,12 @@ data = res.json()`}</code>
               </a>
             </div>
           </div>
-          <p className="mt-8 text-center text-xs text-gray-600">
-            Made with care for developers, testers, and learners everywhere.
-          </p>
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <p className="text-xs text-gray-600">
+              Made with care for developers, testers, and learners everywhere.
+            </p>
+            <StorageStatus />
+          </div>
         </div>
       </footer>
     </div>
