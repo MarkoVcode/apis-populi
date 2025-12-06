@@ -6,6 +6,8 @@
 [![Next.js](https://img.shields.io/badge/Next.js-14+-black)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue)](https://www.typescriptlang.org/)
 
+**Live Demo:** [https://testapi.contractkit.app](https://testapi.contractkit.app)
+
 ## Overview
 
 APIs Populi provides 5 diverse REST APIs with:
