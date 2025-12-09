@@ -6,8 +6,14 @@ const isKVConfigured = !!(
   process.env.KV_REST_API_TOKEN
 );
 
-// In-memory fallback storage
-const memoryStore = new Map<string, unknown>();
+// In-memory fallback storage (use globalThis to persist across module recompilations in dev mode)
+const globalForMemoryStore = globalThis as typeof globalThis & {
+  memoryStore: Map<string, unknown>;
+};
+const memoryStore = globalForMemoryStore.memoryStore ?? new Map<string, unknown>();
+if (!globalForMemoryStore.memoryStore) {
+  globalForMemoryStore.memoryStore = memoryStore;
+}
 
 export interface Database {
   get<T>(key: string): Promise<T | null>;

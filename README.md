@@ -1,6 +1,6 @@
 # APIs Populi
 
-**REST APIs for Everyone** - A collection of 5 fully-featured RESTful APIs for testing, learning, and development.
+**REST APIs for Everyone** - A collection of 6 fully-featured RESTful APIs for testing, learning, and development.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Next.js](https://img.shields.io/badge/Next.js-14+-black)](https://nextjs.org/)
@@ -10,7 +10,7 @@
 
 ## Overview
 
-APIs Populi provides 5 diverse REST APIs with:
+APIs Populi provides 6 diverse REST APIs with:
 - Real-world data (actual airports, classic books, real planets)
 - Multiple authentication methods (JWT, OAuth2, API Key, Basic Auth, Session Cookies)
 - Async processing patterns (polling and webhooks)
@@ -27,6 +27,7 @@ APIs Populi provides 5 diverse REST APIs with:
 | **Warehouse** | Inventory management with polymorphic items | Basic Auth, Custom Header |
 | **School** | Education management with students, teachers, and grades | Session Cookie, API Key |
 | **Space** | Cosmic database with planets, stars, galaxies, and missions | JWT Bearer, Basic Auth |
+| **Content** | CMS-like content delivery with placements and personalization | Cookie (optional) |
 
 ## Quick Start
 
@@ -149,6 +150,42 @@ curl "http://localhost:3000/api/space/compare?ids=planet-earth,planet-mars,plane
   -u space_user:space_pass
 ```
 
+### Content API (Cookie Personalization)
+
+```bash
+# List all available pages
+curl http://localhost:3000/api/content/pages
+
+# Get a page with all placements
+curl http://localhost:3000/api/content/pages/header
+
+# Filter by placement (comma-separated or multiple params)
+curl "http://localhost:3000/api/content/pages/header?placement=hero,promo"
+curl "http://localhost:3000/api/content/pages/header?placement=hero&placement=sidebar"
+
+# Create personalization profile and get cookie
+curl -X POST http://localhost:3000/api/content/cookie \
+  -H "Content-Type: application/json" \
+  -d '{"name":"John Doe","email":"john@example.com","segment":"premium"}' \
+  -c cookies.txt
+
+# Fetch personalized content
+curl "http://localhost:3000/api/content/pages/header?placement=hero" \
+  -b cookies.txt
+
+# Check current profile
+curl http://localhost:3000/api/content/cookie -b cookies.txt
+
+# Delete personalization
+curl -X DELETE http://localhost:3000/api/content/cookie -b cookies.txt
+```
+
+**Content API Features:**
+- **Placements**: Filter by `hero`, `promo`, `sidebar`
+- **Dynamic Content**: Publish date changes every 5 minutes, with random editor-like variations
+- **Personalization**: Anonymous users get generic content; cookie users get personalized greetings
+- **Segments**: `standard`, `premium`, `vip` for targeted content
+
 ## Common Features
 
 ### Pagination
@@ -214,6 +251,7 @@ When exceeded, returns `429 Too Many Requests` with `Retry-After` header.
 | Warehouse | 50 |
 | School | 80 |
 | Space | 120 |
+| Content | 200 |
 
 ### OpenAPI Specs
 
@@ -225,6 +263,7 @@ curl http://localhost:3000/api/flights/openapi.yaml
 curl http://localhost:3000/api/warehouse/openapi.yaml
 curl http://localhost:3000/api/school/openapi.yaml
 curl http://localhost:3000/api/space/openapi.yaml
+curl http://localhost:3000/api/content/openapi.yaml
 ```
 
 ### Data Reset
@@ -379,6 +418,7 @@ curl -X POST http://localhost:3000/api/warehouse/orders \
 | Warehouse | 25 items (5 per type), 5 locations, orders, shipments |
 | School | 200 students, 50 teachers, 20 subjects, 40 classes, grades |
 | Space | 12 planets, 20 stars, 10 galaxies, 88 constellations, missions |
+| Content | 10 page types, 3 placements per page, user profiles |
 
 ## Deployment
 
@@ -410,7 +450,8 @@ apis-populi/
 │       ├── books/               # Books API routes
 │       ├── warehouse/           # Warehouse API routes
 │       ├── school/              # School API routes
-│       └── space/               # Space API routes
+│       ├── space/               # Space API routes
+│       └── content/             # Content API routes
 ├── lib/
 │   ├── auth/                    # Authentication modules
 │   ├── data/                    # Seed data and stores

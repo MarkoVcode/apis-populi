@@ -21,6 +21,7 @@ export const rateLimitConfigs: Record<string, RateLimitConfig> = {
   warehouse: { limit: 50, windowMs: 60000 },
   school: { limit: 80, windowMs: 60000 },
   space: { limit: 120, windowMs: 60000 },
+  content: { limit: 200, windowMs: 60000 },
 };
 
 export function getClientIdentifier(request: Request): string {

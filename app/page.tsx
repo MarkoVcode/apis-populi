@@ -64,6 +64,17 @@ const apis = [
     example: `curl /api/space/planets \\
   -u space_user:space_pass`,
   },
+  {
+    name: 'Content',
+    path: '/api/content',
+    icon: '📄',
+    description: 'CMS-like content delivery with page sections, placements, dynamic variations, and cookie-based personalization.',
+    auth: ['Cookie (optional)'],
+    endpoints: 8,
+    color: 'from-rose-500 to-red-500',
+    features: ['Placement filtering', 'Dynamic content', 'Personalization'],
+    example: `curl /api/content/pages/header?placement=hero,promo`,
+  },
 ];
 
 const features = [
@@ -114,7 +125,7 @@ export default function Home() {
               REST APIs for Everyone
             </p>
             <p className="mt-6 max-w-2xl mx-auto text-lg text-gray-400">
-              A collection of 5 fully-featured RESTful APIs for testing, learning, and development.
+              A collection of 6 fully-featured RESTful APIs for testing, learning, and development.
               Real-world data, multiple authentication methods, and comprehensive documentation.
             </p>
             <div className="mt-10 flex items-center justify-center gap-4">
@@ -315,6 +326,14 @@ data = res.json()`}</code>
                   <td className="py-4 px-4 text-gray-300">Basic Auth</td>
                   <td className="py-4 px-4 text-gray-400">
                     <code>space_user / space_pass</code>
+                  </td>
+                </tr>
+                <tr className="border-b border-gray-800">
+                  <td className="py-4 px-4 font-medium">Content</td>
+                  <td className="py-4 px-4 text-gray-300">Cookie (optional)</td>
+                  <td className="py-4 px-4 text-gray-300">None required</td>
+                  <td className="py-4 px-4 text-gray-400">
+                    <code>POST /api/content/cookie</code>
                   </td>
                 </tr>
               </tbody>
