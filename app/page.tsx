@@ -75,6 +75,20 @@ const apis = [
     features: ['Placement filtering', 'Dynamic content', 'Personalization'],
     example: `curl /api/content/pages/header?placement=hero,promo`,
   },
+  {
+    name: 'Mobile CMS',
+    path: '/api/mobile',
+    icon: '📱',
+    description: 'GraphQL API for mobile app content management. App config, banners, articles, notifications (polymorphic), feature flags, and navigation.',
+    auth: ['API Key'],
+    endpoints: 4,
+    color: 'from-cyan-500 to-blue-500',
+    features: ['GraphQL', 'Polymorphic types', 'Feature flags', 'Dynamic content'],
+    example: `curl -X POST /api/mobile/graphql \\
+  -H "Content-Type: application/json" \\
+  -H "X-API-Key: mobile-api-key-1" \\
+  -d '{"query":"{ appConfig { appVersion } }"}'`,
+  },
 ];
 
 const features = [
@@ -125,7 +139,7 @@ export default function Home() {
               REST APIs for Everyone
             </p>
             <p className="mt-6 max-w-2xl mx-auto text-lg text-gray-400">
-              A collection of 6 fully-featured RESTful APIs for testing, learning, and development.
+              A collection of 7 fully-featured APIs (REST + GraphQL) for testing, learning, and development.
               Real-world data, multiple authentication methods, and comprehensive documentation.
             </p>
             <div className="mt-10 flex items-center justify-center gap-4">
@@ -334,6 +348,14 @@ data = res.json()`}</code>
                   <td className="py-4 px-4 text-gray-300">None required</td>
                   <td className="py-4 px-4 text-gray-400">
                     <code>POST /api/content/cookie</code>
+                  </td>
+                </tr>
+                <tr className="border-b border-gray-800">
+                  <td className="py-4 px-4 font-medium">Mobile CMS</td>
+                  <td className="py-4 px-4 text-gray-300">API Key (header)</td>
+                  <td className="py-4 px-4 text-gray-300">API Key (query)</td>
+                  <td className="py-4 px-4 text-gray-400">
+                    <code>mobile-api-key-1</code>
                   </td>
                 </tr>
               </tbody>

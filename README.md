@@ -1,6 +1,6 @@
 # APIs Populi
 
-**REST APIs for Everyone** - A collection of 6 fully-featured RESTful APIs for testing, learning, and development.
+**APIs for Everyone** - A collection of 7 fully-featured APIs (REST + GraphQL) for testing, learning, and development.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Next.js](https://img.shields.io/badge/Next.js-14+-black)](https://nextjs.org/)
@@ -10,7 +10,7 @@
 
 ## Overview
 
-APIs Populi provides 6 diverse REST APIs with:
+APIs Populi provides 7 diverse APIs (6 REST + 1 GraphQL) with:
 - Real-world data (actual airports, classic books, real planets)
 - Multiple authentication methods (JWT, OAuth2, API Key, Basic Auth, Session Cookies)
 - Async processing patterns (polling and webhooks)
@@ -20,14 +20,15 @@ APIs Populi provides 6 diverse REST APIs with:
 
 ## Available APIs
 
-| API | Description | Authentication |
-|-----|-------------|----------------|
-| **Flights** | Aviation API with airports, airlines, flights, and bookings | JWT Bearer, OAuth2 |
-| **Books** | Library API with classic literature, authors, and reviews | API Key |
-| **Warehouse** | Inventory management with polymorphic items | Basic Auth, Custom Header |
-| **School** | Education management with students, teachers, and grades | Session Cookie, API Key |
-| **Space** | Cosmic database with planets, stars, galaxies, and missions | JWT Bearer, Basic Auth |
-| **Content** | CMS-like content delivery with placements and personalization | Cookie (optional) |
+| API | Type | Description | Authentication |
+|-----|------|-------------|----------------|
+| **Flights** | REST | Aviation API with airports, airlines, flights, and bookings | JWT Bearer, OAuth2 |
+| **Books** | REST | Library API with classic literature, authors, and reviews | API Key |
+| **Warehouse** | REST | Inventory management with polymorphic items | Basic Auth, Custom Header |
+| **School** | REST | Education management with students, teachers, and grades | Session Cookie, API Key |
+| **Space** | REST | Cosmic database with planets, stars, galaxies, and missions | JWT Bearer, Basic Auth |
+| **Content** | REST | CMS-like content delivery with placements and personalization | Cookie (optional) |
+| **Mobile CMS** | GraphQL | Mobile app CMS with config, banners, articles, notifications, feature flags | API Key |
 
 ## Quick Start
 
@@ -186,6 +187,57 @@ curl -X DELETE http://localhost:3000/api/content/cookie -b cookies.txt
 - **Personalization**: Anonymous users get generic content; cookie users get personalized greetings
 - **Segments**: `standard`, `premium`, `vip` for targeted content
 
+### Mobile CMS API (GraphQL)
+
+```bash
+# 1. App Config - Deeply nested configuration object
+curl -X POST http://localhost:3000/api/mobile/graphql \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: mobile-api-key-1" \
+  -d '{"query":"{ appConfig { appVersion minimumSupportedVersion theme { primaryColor darkMode { enabled automatic } } analytics { providers { name enabled } } } }"}'
+
+# 2. Banners - Filtered promotional content with targeting
+curl -X POST http://localhost:3000/api/mobile/graphql \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: mobile-api-key-1" \
+  -d '{"query":"{ banners(filter: { platform: IOS, active: true }) { edges { node { id title imageUrl cta { text url } targeting { platforms segments } } } totalCount } }"}'
+
+# 3. Articles - Paginated rich content with authors
+curl -X POST http://localhost:3000/api/mobile/graphql \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: mobile-api-key-1" \
+  -d '{"query":"{ articles(pagination: { first: 5 }) { edges { node { id title excerpt author { name avatar } category { name color } viewCount publishedAt } cursor } pageInfo { hasNextPage endCursor } totalCount } }"}'
+
+# 4. Notifications - Polymorphic types (5 different notification schemas)
+curl -X POST http://localhost:3000/api/mobile/graphql \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: mobile-api-key-1" \
+  -d '{"query":"{ notifications(filter: { read: false }) { edges { node { id type title body priority ... on PromotionalNotification { imageUrl discountCode discountPercentage } ... on TransactionalNotification { orderId orderStatus amount } ... on SystemNotification { actionRequired category } ... on SocialNotification { actorName action } } } unreadCount } }"}'
+
+# 5. Feature Flags - With targeting rules and context evaluation
+curl -X POST http://localhost:3000/api/mobile/graphql \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: mobile-api-key-1" \
+  -d '{"query":"query GetFlags($ctx: FeatureFlagContextInput) { featureFlags(context: $ctx) { flags { key name type defaultValue enabled rules { name conditions { attribute operator value } percentage } } evaluatedAt } }","variables":{"ctx":{"platform":"IOS","appVersion":"2.5.0","userSegment":"PREMIUM"}}}'
+
+# 6. Navigation - Hierarchical menu structure with nesting
+curl -X POST http://localhost:3000/api/mobile/graphql \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: mobile-api-key-1" \
+  -d '{"query":"{ navigation(location: \"main\") { id name items { id label icon url badge { text count color } children { id label url children { id label url } } } } }"}'
+
+# Get GraphQL schema
+curl http://localhost:3000/api/mobile/schema.graphql
+```
+
+**Mobile CMS API Features:**
+- **6 Query Types**: Each returns fundamentally different response schemas
+- **Polymorphic Notifications**: 5 types (Promotional, Transactional, System, Reminder, Social)
+- **Relay-Style Pagination**: Cursor-based with `first`, `after`, `pageInfo`
+- **Feature Flags**: Complex targeting rules with platform, version, and segment conditions
+- **Dynamic Content**: View counts, timestamps, and text variations simulate live CMS
+- **Hierarchical Navigation**: Nested menus up to 3 levels deep
+
 ## Common Features
 
 ### Pagination
@@ -252,6 +304,7 @@ When exceeded, returns `429 Too Many Requests` with `Retry-After` header.
 | School | 80 |
 | Space | 120 |
 | Content | 200 |
+| Mobile CMS | 100 |
 
 ### OpenAPI Specs
 
@@ -367,6 +420,7 @@ curl http://localhost:3000/api/warehouse/items \
 | School | Login | `admin` / `school123` |
 | School | API Key | `school-api-key-1` |
 | Space | Basic Auth | `space_user` / `space_pass` |
+| Mobile CMS | API Key | `mobile-api-key-1`, `mobile-api-key-2`, `mobile-demo-key` |
 
 ## Async Processing
 
@@ -419,6 +473,7 @@ curl -X POST http://localhost:3000/api/warehouse/orders \
 | School | 200 students, 50 teachers, 20 subjects, 40 classes, grades |
 | Space | 12 planets, 20 stars, 10 galaxies, 88 constellations, missions |
 | Content | 10 page types, 3 placements per page, user profiles |
+| Mobile CMS | 1 app config, 10 banners, 18 articles, 25 notifications, 12 feature flags, 3 navigation menus |
 
 ## Deployment
 
@@ -451,11 +506,13 @@ apis-populi/
 │       ├── warehouse/           # Warehouse API routes
 │       ├── school/              # School API routes
 │       ├── space/               # Space API routes
-│       └── content/             # Content API routes
+│       ├── content/             # Content API routes
+│       └── mobile/              # Mobile CMS GraphQL API
 ├── lib/
 │   ├── auth/                    # Authentication modules
 │   ├── data/                    # Seed data and stores
 │   ├── db/                      # KV storage wrapper
+│   ├── graphql/                 # GraphQL schema and resolvers
 │   └── utils/                   # Utilities
 └── public/
 ```

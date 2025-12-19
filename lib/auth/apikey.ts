@@ -13,6 +13,11 @@ const apiKeys: Record<string, string[]> = {
     'school-api-key-2',
     'school-demo-key',
   ],
+  mobile: process.env.MOBILE_API_KEYS?.split(',') || [
+    'mobile-api-key-1',
+    'mobile-api-key-2',
+    'mobile-demo-key',
+  ],
 };
 
 export interface ApiKeyUser {

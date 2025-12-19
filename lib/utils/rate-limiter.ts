@@ -22,6 +22,7 @@ export const rateLimitConfigs: Record<string, RateLimitConfig> = {
   school: { limit: 80, windowMs: 60000 },
   space: { limit: 120, windowMs: 60000 },
   content: { limit: 200, windowMs: 60000 },
+  mobile: { limit: 100, windowMs: 60000 },
 };
 
 export function getClientIdentifier(request: Request): string {
