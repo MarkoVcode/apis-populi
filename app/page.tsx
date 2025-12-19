@@ -1,4 +1,145 @@
+'use client';
+
+import { useState } from 'react';
 import { StorageStatus } from '@/components/StorageStatus';
+
+const graphqlExamples = [
+  {
+    name: 'App Config',
+    description: 'Deeply nested configuration object',
+    query: `query {
+  appConfig {
+    appVersion
+    minimumSupportedVersion
+    theme {
+      primaryColor
+      darkMode { enabled automatic }
+    }
+    analytics {
+      providers { name enabled }
+    }
+  }
+}`,
+  },
+  {
+    name: 'Banners',
+    description: 'Filtered promotional content with targeting',
+    query: `query {
+  banners(filter: { platform: IOS, active: true }) {
+    edges {
+      node {
+        id
+        title
+        imageUrl
+        cta { text url }
+        targeting { platforms segments }
+      }
+    }
+    totalCount
+  }
+}`,
+  },
+  {
+    name: 'Articles',
+    description: 'Paginated rich content with authors',
+    query: `query {
+  articles(pagination: { first: 5 }) {
+    edges {
+      node {
+        id
+        title
+        excerpt
+        author { name avatar }
+        category { name color }
+        viewCount
+      }
+      cursor
+    }
+    pageInfo { hasNextPage endCursor }
+    totalCount
+  }
+}`,
+  },
+  {
+    name: 'Notifications',
+    description: 'Polymorphic types (5 different schemas)',
+    query: `query {
+  notifications(filter: { read: false }) {
+    edges {
+      node {
+        id
+        type
+        title
+        priority
+        ... on PromotionalNotification {
+          discountCode
+          discountPercentage
+        }
+        ... on TransactionalNotification {
+          orderId
+          orderStatus
+        }
+        ... on SystemNotification {
+          actionRequired
+          category
+        }
+        ... on SocialNotification {
+          actorName
+          action
+        }
+      }
+    }
+    unreadCount
+  }
+}`,
+  },
+  {
+    name: 'Feature Flags',
+    description: 'Key-value flags with targeting rules',
+    query: `query GetFlags($ctx: FeatureFlagContextInput) {
+  featureFlags(context: $ctx) {
+    flags {
+      key
+      name
+      type
+      defaultValue
+      enabled
+      rules {
+        name
+        conditions { attribute operator value }
+        percentage
+      }
+    }
+    evaluatedAt
+  }
+}
+
+# Variables:
+# { "ctx": { "platform": "IOS", "userSegment": "PREMIUM" } }`,
+  },
+  {
+    name: 'Navigation',
+    description: 'Hierarchical menu structure with nesting',
+    query: `query {
+  navigation(location: "main") {
+    id
+    name
+    items {
+      id
+      label
+      icon
+      url
+      badge { text count color }
+      children {
+        id
+        label
+        url
+      }
+    }
+  }
+}`,
+  },
+];
 
 const apis = [
   {
@@ -125,6 +266,9 @@ const features = [
 ];
 
 export default function Home() {
+  const [showGraphQLModal, setShowGraphQLModal] = useState(false);
+  const [selectedExample, setSelectedExample] = useState(0);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-black text-white">
       {/* Hero Section */}
@@ -255,12 +399,21 @@ data = res.json()`}</code>
                   </pre>
                 </div>
                 <div className="mt-4 flex gap-4">
-                  <a
-                    href={`${api.path}/openapi.yaml`}
-                    className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
-                  >
-                    OpenAPI Spec &rarr;
-                  </a>
+                  {api.name === 'Mobile CMS' ? (
+                    <button
+                      onClick={() => setShowGraphQLModal(true)}
+                      className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                    >
+                      GraphQL Examples &rarr;
+                    </button>
+                  ) : (
+                    <a
+                      href={`${api.path}/openapi.yaml`}
+                      className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                    >
+                      OpenAPI Spec &rarr;
+                    </a>
+                  )}
                 </div>
               </div>
             ))}
@@ -401,6 +554,98 @@ data = res.json()`}</code>
           </div>
         </div>
       </footer>
+
+      {/* GraphQL Examples Modal */}
+      {showGraphQLModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            onClick={() => setShowGraphQLModal(false)}
+          />
+          <div className="relative bg-gray-900 rounded-2xl border border-gray-700 max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-700">
+              <div>
+                <h3 className="text-xl font-bold">GraphQL Query Examples</h3>
+                <p className="text-sm text-gray-400 mt-1">
+                  Mobile CMS API - 6 fundamentally different query types
+                </p>
+              </div>
+              <button
+                onClick={() => setShowGraphQLModal(false)}
+                className="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-gray-800 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="flex h-[60vh]">
+              {/* Sidebar - Query List */}
+              <div className="w-56 border-r border-gray-700 overflow-y-auto">
+                {graphqlExamples.map((example, index) => (
+                  <button
+                    key={example.name}
+                    onClick={() => setSelectedExample(index)}
+                    className={`w-full text-left p-4 border-b border-gray-800 transition-colors ${
+                      selectedExample === index
+                        ? 'bg-blue-900/30 border-l-2 border-l-blue-400'
+                        : 'hover:bg-gray-800/50'
+                    }`}
+                  >
+                    <div className="font-medium text-sm">{example.name}</div>
+                    <div className="text-xs text-gray-500 mt-1">{example.description}</div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Main - Query Display */}
+              <div className="flex-1 overflow-y-auto p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-lg font-semibold">{graphqlExamples[selectedExample].name}</h4>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(graphqlExamples[selectedExample].query);
+                    }}
+                    className="text-xs px-3 py-1.5 rounded bg-gray-700 hover:bg-gray-600 text-gray-300 transition-colors"
+                  >
+                    Copy Query
+                  </button>
+                </div>
+                <pre className="bg-gray-950 rounded-lg p-4 overflow-x-auto text-sm text-gray-300 border border-gray-800">
+                  <code>{graphqlExamples[selectedExample].query}</code>
+                </pre>
+                <div className="mt-4 text-xs text-gray-500">
+                  <p className="mb-2">Try it with cURL:</p>
+                  <pre className="bg-gray-950 rounded-lg p-3 overflow-x-auto border border-gray-800 text-gray-400">
+                    <code>{`curl -X POST /api/mobile/graphql \\
+  -H "Content-Type: application/json" \\
+  -H "X-API-Key: mobile-api-key-1" \\
+  -d '{"query": "..."}'`}</code>
+                  </pre>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-gray-700 bg-gray-800/50">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-400">
+                  API Keys: <code className="text-blue-400">mobile-api-key-1</code>, <code className="text-blue-400">mobile-api-key-2</code>, <code className="text-blue-400">mobile-demo-key</code>
+                </span>
+                <a
+                  href="/api/mobile/schema.graphql"
+                  className="text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  Full Schema &rarr;
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
