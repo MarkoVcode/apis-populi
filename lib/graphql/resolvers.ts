@@ -1,5 +1,6 @@
 // GraphQL Resolvers for Mobile CMS API
 
+import { randomUUID } from 'crypto';
 import { GraphQLScalarType, Kind } from 'graphql';
 import {
   getAppConfig,
@@ -306,6 +307,8 @@ export const resolvers = {
       return {
         ...paginated,
         unreadCount,
+        requestId: randomUUID(),
+        requestTimestamp: new Date().toISOString(),
       };
     },
 
@@ -378,6 +381,8 @@ export const resolvers = {
       return {
         ...paginated,
         unreadCount,
+        requestId: randomUUID(),
+        requestTimestamp: new Date().toISOString(),
       };
     },
 

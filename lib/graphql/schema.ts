@@ -348,6 +348,8 @@ export const typeDefs = /* GraphQL */ `
     pageInfo: PageInfo!
     totalCount: Int!
     unreadCount: Int!
+    requestId: ID!
+    requestTimestamp: DateTime!
   }
 
   type NotificationEdge {
